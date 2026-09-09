@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit 3, Day 5 — Build Your Retirement Paycheck</title>
+<style>
+:root{--navy:#17345b;--gold:#b58b2a;--ink:#20252b;--muted:#66717d;--paper:#fbfaf6;--panel:#eef3f8;--green:#287a4b;--red:#a6423a;--line:#d7dde4;--blue:#2e6fa3}
+*{box-sizing:border-box} body{font-family:Arial,sans-serif;margin:0;background:#f5f7fa;color:var(--ink);line-height:1.5}.wrap{max-width:1000px;margin:auto;background:#fff;min-height:100vh;padding:22px 28px 60px}h1{color:var(--navy);font-size:2rem;margin:.2em 0}h2{color:var(--navy);border-bottom:3px solid var(--gold);padding-bottom:6px;margin-top:2.2em}h3{color:var(--navy)}.subtitle{color:var(--muted);font-size:1.05rem}.callout{background:var(--paper);border-left:5px solid var(--gold);padding:14px 18px;margin:14px 0}.info{background:var(--panel);border-left:5px solid var(--navy);padding:14px 18px;margin:14px 0}.source{font-size:.78rem;color:var(--muted)}.source a{color:var(--blue)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}.card{border:1px solid var(--line);border-radius:10px;padding:15px;background:#fff}.choice{cursor:pointer;transition:.15s}.choice:hover,.choice.selected{border:2px solid var(--navy);background:#f2f6fb}.big-number{font-size:1.7rem;font-weight:700;color:var(--navy)}label{font-weight:700;display:block;margin-top:10px}.control{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.control input[type=range]{flex:1;min-width:220px}.num{width:110px;padding:7px;border:1px solid #aaa;border-radius:5px;font-size:1rem}.money{font-weight:700;color:var(--navy);min-width:90px}.budget-row{display:grid;grid-template-columns:180px 1fr 100px;gap:12px;align-items:center;margin:10px 0}.budget-row input[type=range]{width:100%}.sticky{position:sticky;top:0;z-index:10;background:#fff;border-bottom:2px solid var(--navy);padding:10px 0;margin:0 -4px 15px}.paybar{height:24px;background:#e4e7eb;border-radius:12px;overflow:hidden;display:flex}.ssbar{background:#8bb4d8}.pensionbar{background:#d9b65d}.investbar{background:#77b58d}.gapbar{background:#d88c86}.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.8rem;margin-top:5px}.dot{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px}.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}.summary-item{background:var(--panel);border-radius:8px;padding:10px}.summary-item small{display:block;color:var(--muted)}textarea{width:100%;min-height:80px;padding:10px;font:inherit;border:1px solid #bbb;border-radius:6px}.reflection{margin:18px 0;padding:14px;background:#fffaf0;border:1px solid #ead7a1;border-radius:8px}button{padding:10px 15px;border-radius:6px;border:1px solid var(--navy);background:#fff;color:var(--navy);font-weight:700;cursor:pointer}button.primary{background:var(--navy);color:#fff}button:hover{filter:brightness(.96)}.pill{display:inline-block;padding:4px 9px;border-radius:12px;background:#edf1f5;font-size:.8rem}.warn{color:var(--red);font-weight:700}.good{color:var(--green);font-weight:700}.hidden{display:none}.checklist li{margin:5px 0}.footer-actions{display:flex;gap:10px;flex-wrap:wrap}.tax-box{font-size:1.1rem;background:#f7f9fb;padding:12px;border-radius:8px}.scenario-title{font-weight:700;color:var(--navy)}
+@media(max-width:650px){.wrap{padding:15px}.budget-row{grid-template-columns:1fr}.sticky{position:static}}
+@media print{button,.no-print,.sticky{display:none!important}.wrap{max-width:none;padding:0}body{background:#fff}#printReport{display:block!important}body.printing>.wrap>*:not(#printReport){display:none!important}}
+#printReport{display:none}.print-section{margin-bottom:16px}.print-label{font-weight:bold;color:var(--navy)}
+</style>
+</head><body><div class="wrap">
+<h1>Build Your Retirement Paycheck</h1>
+<div class="subtitle">Unit 3 · Day 5 — A self-guided retirement simulator</div>
+<div class="callout"><strong>The question for today:</strong> When your paycheck from work stops, where will your money come from?</div>
+<div class="info no-print"><strong>How this works:</strong> Make choices, change the numbers, and watch your retirement paycheck change. There is no one “correct” lifestyle. Your grade is based on completing the simulations and reflections—not on choosing a certain retirement age or income.</div>
+<div class="control no-print"><label style="margin:0" for="studentId">Assigned code name:</label><input id="studentId" class="num" style="width:180px" type="text" placeholder="Falcon217"><button onclick="loadState()">Load saved work</button><span id="saveStatus" class="source"></span></div>
+
+<div class="sticky" id="paycheckSticky">
+ <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><strong>MY RETIREMENT PAYCHECK</strong><span>Goal: <b id="stickyGoal">$0/mo</b> · Filled: <b id="stickyFilled">$0/mo</b> · <span id="stickyGap">Gap: $0/mo</span></span></div>
+ <div class="paybar" aria-label="Retirement paycheck sources"><div id="barSS" class="ssbar"></div><div id="barPension" class="pensionbar"></div><div id="barInvest" class="investbar"></div><div id="barGap" class="gapbar"></div></div>
+ <div class="legend"><span><i class="dot ssbar"></i>Social Security</span><span><i class="dot pensionbar"></i>Pension</span><span><i class="dot investbar"></i>Investments</span><span><i class="dot gapbar"></i>Gap</span></div>
+</div>
+
+<h2>1. Why invest?</h2>
+<p>Saving is useful for money you may need soon. <strong>Investing</strong> is designed for longer-term goals because your money has time to grow—but investment values can rise and fall. Retirement is one of the biggest long-term goals most people will ever fund.</p>
+<div class="callout">You are not investing just to “have investments.” You are trying to build a future source of income for the years when you are no longer earning a paycheck from work.</div>
+<div class="reflection"><strong>Quick thought:</strong> Why might retirement be a reason to invest instead of keeping all long-term money as cash?<textarea id="r1" placeholder="Write 1–2 sentences..."></textarea></div>
+
+<h2>2. Why think about retirement now?</h2>
+<p>The earlier money is invested, the longer it has to potentially grow. You will test this later by changing the age you start investing.</p>
+<div class="grid">
+ <div class="card"><div class="scenario-title">Start earlier</div><p>More years for contributions and investment growth.</p></div>
+ <div class="card"><div class="scenario-title">Start later</div><p>Fewer years to build the same future paycheck.</p></div>
+</div>
+
+<h2>3. How long do you want to work—and how long might you need the money?</h2>
+<div class="grid">
+ <div class="card"><label>Retire at age <span id="retireAgeOut">65</span></label><input id="retireAge" type="range" min="55" max="75" value="65" oninput="recalc()"><div class="source">Moving this later gives investments more time to grow.</div></div>
+ <div class="card"><label>Plan for money through age <span id="endAgeOut">90</span></label><input id="endAge" type="range" min="75" max="105" value="90" oninput="recalc()"><div class="source">Planning longer means your retirement income may need to last more years.</div></div>
+</div>
+<div class="info">Your current plan: work until <b id="retireAgeText">65</b>, then fund about <b id="retYears">25</b> years of retirement.</div>
+<div class="reflection"><strong>What did you notice?</strong> What happens to the challenge of funding retirement when you retire earlier or plan for a longer life?<textarea id="r3" placeholder="Write 1–2 sentences..."></textarea></div>
+
+<h2>4. What kind of monthly paycheck will you need?</h2>
+<p>It is hard to guess a retirement income without knowing what it has to pay for. Start with a Denver-area lifestyle scenario, then customize it. <strong>All amounts are in today's dollars.</strong></p>
+<div class="grid no-print">
+ <div class="card choice" onclick="applyLifestyle('basic',this)"><div class="scenario-title">Basic / Lean</div><div class="big-number">≈ $4,500/mo</div><p>Modest housing, careful spending, limited travel, healthcare budget.</p></div>
+ <div class="card choice selected" onclick="applyLifestyle('comfortable',this)"><div class="scenario-title">Comfortable</div><div class="big-number">≈ $6,000/mo</div><p>More flexibility for housing, transportation, healthcare, hobbies and travel.</p></div>
+ <div class="card choice" onclick="applyLifestyle('flexible',this)"><div class="scenario-title">More Flexible</div><div class="big-number">≈ $8,000/mo</div><p>Higher housing/discretionary spending and a larger cushion.</p></div>
+</div>
+<div class="source">These are classroom starting scenarios, not official retirement budgets. For local context, MIT's 2026 Denver-Aurora-Centennial basic-needs data for one adult includes annual housing of $19,817, food of $4,666, transportation of $8,188, and medical costs of $3,199.</div>
+
+<h3>Build your own monthly budget</h3>
+<div id="budgetControls">
+ <div class="budget-row"><strong>Housing</strong><input id="housing" type="range" min="500" max="4000" step="50" value="1800" oninput="recalc()"><span id="housingOut" class="money"></span></div>
+ <div class="budget-row"><strong>Food</strong><input id="food" type="range" min="250" max="1400" step="50" value="550" oninput="recalc()"><span id="foodOut" class="money"></span></div>
+ <div class="budget-row"><strong>Utilities / phone / internet</strong><input id="utilities" type="range" min="150" max="900" step="50" value="400" oninput="recalc()"><span id="utilitiesOut" class="money"></span></div>
+ <div class="budget-row"><strong>Transportation</strong><input id="transport" type="range" min="100" max="1600" step="50" value="650" oninput="recalc()"><span id="transportOut" class="money"></span></div>
+ <div class="budget-row"><strong>Healthcare</strong><input id="health" type="range" min="300" max="2000" step="50" value="800" oninput="recalc()"><span id="healthOut" class="money"></span></div>
+ <div class="budget-row"><strong>Fun / travel / other / cushion</strong><input id="other" type="range" min="200" max="3000" step="50" value="1800" oninput="recalc()"><span id="otherOut" class="money"></span></div>
+</div>
+<div class="grid no-print">
+ <div class="card"><strong>Housing what-if</strong><p>Renting may continue for your entire retirement. Owning a home with no mortgage still has taxes, insurance, maintenance and possible HOA costs.</p><button onclick="setHousing(1800)">I may rent</button> <button onclick="setHousing(1000)">Home paid off</button> <button onclick="setHousing(2600)">Still paying mortgage</button></div>
+ <div class="card"><strong>Healthcare what-if</strong><p>Medicare is not free. In 2026, standard Part B alone is $202.90/month, and retirees can still face deductibles, prescriptions and other costs.</p><button onclick="bump('health',500)">Healthcare costs +$500</button></div>
+</div>
+<div class="info"><strong>Your retirement paycheck goal:</strong> <span id="budgetTotal" class="big-number">$0/month</span><br><span id="annualGoal"></span></div>
+<div class="reflection"><strong>What did you learn from building the budget?</strong> Which expenses were easy to underestimate? What monthly goal feels realistic for the lifestyle you chose?<textarea id="r4" placeholder="Use at least one number from your budget..."></textarea></div>
+
+<h2>5. Where will your paycheck come from?</h2>
+<p>Your retirement income can come from several places. We will build your paycheck one source at a time.</p>
+<div class="grid"><div class="card"><strong>Social Security</strong><p>A government retirement benefit based on covered work and earnings.</p></div><div class="card"><strong>Pension</strong><p>A benefit some employers promise under a defined-benefit plan.</p></div><div class="card"><strong>Your investments</strong><p>Money you build in accounts such as a 401(k) or Roth IRA and actually invest.</p></div></div>
+
+<h2>6. Social Security: what is it, and is it enough?</h2>
+<p>Workers and employers help fund Social Security through payroll taxes. In 2026, employees pay <strong>6.2% Social Security tax</strong> on covered wages up to the annual taxable maximum. The paycheck may show this as <strong>Social Security, OASDI, or part of FICA</strong>. Medicare payroll tax is separate.</p>
+<div class="tax-box">If you earn <input id="monthlyPay" class="num" type="number" value="2000" min="0" step="100" oninput="recalc()"> per month at a job, about <strong id="ssTaxOut"></strong> would be the employee Social Security tax for that month (assuming all of those wages are covered and below the annual cap).</div>
+<div class="callout"><strong>Under-the-table work matters here:</strong> Social Security benefits are based on covered earnings in your work record. If earnings are not reported and Social Security taxes are not paid on them, those earnings generally do not build your Social Security earnings record. SSA uses a worker's highest 35 years of indexed covered earnings in its retirement-benefit calculation.</div>
+<p>The estimated average retired-worker benefit for January 2026 was about <strong>$2,071/month</strong>. That is useful context—not a prediction of your future benefit.</p>
+<div class="control"><label style="margin:0">Illustrative Social Security amount:</label><input id="ssAmount" type="range" min="0" max="4200" step="50" value="2071" oninput="recalc()"><span id="ssAmountOut" class="money"></span></div>
+<div class="source">Sources: Social Security Administration 2026 COLA Fact Sheet; SSA retirement benefit calculation materials. A real future estimate should use your own earnings record through SSA's calculators.</div>
+<div class="info" id="ssGapText"></div>
+<div class="reflection"><strong>Could Social Security alone fund the lifestyle you built?</strong> Explain using your monthly goal and the illustrative Social Security amount.<textarea id="r6" placeholder="Use your numbers..."></textarea></div>
+
+<h2>7. What is a pension?</h2>
+<p>A <strong>defined-benefit pension</strong> is an employer retirement plan that promises a benefit according to the plan's rules—often connected to salary and years of service. Many jobs do not offer one, and students should not assume their future job will.</p>
+<div class="control"><label style="margin:0">What if your job provides a monthly pension?</label><input id="pension" type="range" min="0" max="4000" step="100" value="0" oninput="recalc()"><span id="pensionOut" class="money"></span></div>
+<div class="grid no-print"><button onclick="setPension(0)">No pension</button><button onclick="setPension(1000)">$1,000/mo pension</button><button onclick="setPension(2000)">$2,000/mo pension</button></div>
+<div class="info" id="pensionGapText"></div>
+<div class="reflection"><strong>Do you still need to invest if you expect a pension?</strong> What did adding or removing a pension do to your remaining paycheck gap?<textarea id="r7" placeholder="Use your numbers..."></textarea></div>
+
+<h2>8. What if I don't have a pension? 401(k) and Roth IRA</h2>
+<div class="grid">
+ <div class="card"><h3>401(k)</h3><p>A retirement account offered through an employer. Contributions can come directly from your paycheck. Many traditional 401(k) contributions reduce taxable income now and are generally taxed when withdrawn later.</p><p><strong>Big feature:</strong> an employer may match part of what you contribute.</p></div>
+ <div class="card"><h3>Roth IRA</h3><p>An individual retirement account you open yourself. Contributions are made with money that has already been taxed; qualified withdrawals in retirement can be tax-free.</p><p><strong>Big question:</strong> pay income tax on the money now or later?</p></div>
+</div>
+<div class="callout"><strong>Account ≠ investment.</strong> Opening a 401(k) or Roth IRA does not automatically mean the money is invested. The account holds investments such as funds. The investment growth is what helps build future income.</div>
+<div class="info"><strong>Employer match:</strong> If an employer says “we match up to 3%,” contributing enough to receive the full match can add employer money to your retirement account. <strong>Vesting</strong> means the rules for when employer-contributed money becomes fully yours; your own contributions remain yours.</div>
+
+<h2>9. How do I make this happen?</h2>
+<p>Now use your remaining paycheck gap as the target. Test how starting age, contribution amount, employer match, and investment approach change what your investments may provide.</p>
+<div class="grid">
+ <div class="card"><label>Start investing at age <span id="startAgeOut">22</span></label><input id="startAge" type="range" min="18" max="50" value="22" oninput="recalc()"></div>
+ <div class="card"><label>Your monthly contribution</label><input id="monthlyContribution" type="range" min="0" max="2000" step="25" value="250" oninput="recalc()"><div id="monthlyContributionOut" class="big-number"></div></div>
+ <div class="card"><label>Annual salary</label><input id="salary" type="range" min="20000" max="150000" step="1000" value="50000" oninput="recalc()"><div id="salaryOut" class="big-number"></div></div>
+ <div class="card"><label>Employer match up to</label><input id="matchPct" type="range" min="0" max="8" step="1" value="3" oninput="recalc()"><div><span id="matchPctOut" class="big-number"></span> of salary</div></div>
+</div>
+<h3>Choose an investment assumption</h3>
+<div class="grid no-print">
+ <div class="card choice" data-return="0.02" onclick="selectReturn(this)"><strong>Conservative</strong><p>2% real annual growth assumption</p></div>
+ <div class="card choice selected" data-return="0.04" onclick="selectReturn(this)"><strong>Moderate</strong><p>4% real annual growth assumption</p></div>
+ <div class="card choice" data-return="0.05" onclick="selectReturn(this)"><strong>Growth</strong><p>5% real annual growth assumption</p></div>
+</div>
+<div class="source">These are simplified classroom assumptions stated in today's dollars (after inflation), not predictions or guarantees. The simulator assumes 3% real annual growth while drawing the money down in retirement.</div>
+<div class="summary-grid">
+ <div class="summary-item"><small>Years investing</small><strong id="yearsInvesting"></strong></div>
+ <div class="summary-item"><small>Your contribution</small><strong id="yourAnnual"></strong></div>
+ <div class="summary-item"><small>Estimated employer match</small><strong id="employerAnnual"></strong></div>
+ <div class="summary-item"><small>Projected balance at retirement</small><strong id="projectedBalance"></strong></div>
+ <div class="summary-item"><small>Estimated monthly income from investments</small><strong id="investmentIncome"></strong></div>
+ <div class="summary-item"><small>Final gap / surplus</small><strong id="finalGap"></strong></div>
+</div>
+<div class="grid no-print" style="margin-top:12px"><button onclick="whatIfStartLater()">What if I wait 10 years?</button><button onclick="whatIfNoMatch()">What if I get no match?</button><button onclick="whatIfDoubleContribution()">What if I double my contribution?</button><button onclick="whatIfRetireLater()">What if I retire 5 years later?</button></div>
+<div class="reflection"><strong>Which lever made the biggest difference?</strong> Test at least two changes above. Explain what happened to your projected investment income and paycheck gap.<textarea id="r9" placeholder="Use numbers from your what-ifs..."></textarea></div>
+
+<h2>10. My Retirement Plan</h2>
+<div class="card" id="planCard"></div>
+<div class="reflection"><strong>Final synthesis:</strong> You are giving your 18-year-old self retirement advice. Based on the plan you built, explain where your future retirement paycheck could come from and what you would need to start doing when you begin working. Use numbers from your plan as evidence.<textarea id="finalReflection" style="min-height:140px" placeholder="Aim for about 4–5 thoughtful sentences..."></textarea></div>
+
+<h2>Finish</h2>
+<div id="completionArea" class="info">Complete the reflections above, then submit.</div>
+<div class="footer-actions no-print"><button class="primary" onclick="submitWork()">Submit for Completion Review</button><button onclick="downloadWork()">Download My Retirement Plan as PDF</button></div>
+<div class="source no-print" style="margin-top:12px">After downloading, upload the PDF to Google Classroom. Your work also saves in this browser as you go. Once the teacher connects the Apps Script backend, it can save to the class response sheet too.</div>
+<div id="printReport"></div>
+</div>
+<script>
+const APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbxe99DE0GZUFGwVhHSqV57XYJaOjaS377rQvx-19ylzkZfFuz-acbLnw9KwjCqZpaNGkg/exec';
+const SHARED_SECRET='CHANGE_ME_TO_MATCH_CODE_GS';
+let realReturn=.04;
+const money=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(Math.round(n||0));
+const val=id=>document.getElementById(id).value;
+const num=id=>Number(val(id))||0;
+const reflections=['r1','r3','r4','r6','r7','r9','finalReflection'];
+function setv(id,v){document.getElementById(id).value=v;}
+function applyLifestyle(type,el){document.querySelectorAll('.choice').forEach(x=>{if(x.onclick&&String(x.onclick).includes('applyLifestyle'))x.classList.remove('selected')});el.classList.add('selected');const s={basic:[1500,450,350,450,650,1100],comfortable:[1800,550,400,650,800,1800],flexible:[2500,700,500,800,1000,2500]}[type];['housing','food','utilities','transport','health','other'].forEach((id,i)=>setv(id,s[i]));recalc();}
+function setHousing(v){setv('housing',v);recalc()} function setPension(v){setv('pension',v);recalc()} function bump(id,v){setv(id,Math.min(Number(document.getElementById(id).max),num(id)+v));recalc()}
+function selectReturn(el){document.querySelectorAll('[data-return]').forEach(x=>x.classList.remove('selected'));el.classList.add('selected');realReturn=Number(el.dataset.return);recalc()}
+function fvMonthly(pmt,months,annual){if(months<=0)return 0;const r=annual/12;if(!r)return pmt*months;return pmt*((Math.pow(1+r,months)-1)/r)}
+function retirementMonthly(balance,years,annual=.03){const n=years*12;if(balance<=0||n<=0)return 0;const r=annual/12;return balance*r/(1-Math.pow(1+r,-n))}
+function recalc(){
+ let ra=num('retireAge'),ea=Math.max(num('endAge'),ra+1);if(ea!=num('endAge'))setv('endAge',ea);
+ document.getElementById('retireAgeOut').textContent=ra;document.getElementById('endAgeOut').textContent=ea;document.getElementById('retireAgeText').textContent=ra;document.getElementById('retYears').textContent=ea-ra;
+ ['housing','food','utilities','transport','health','other'].forEach(id=>document.getElementById(id+'Out').textContent=money(num(id)));
+ const goal=['housing','food','utilities','transport','health','other'].reduce((a,id)=>a+num(id),0);document.getElementById('budgetTotal').textContent=money(goal)+'/month';document.getElementById('annualGoal').textContent='That is about '+money(goal*12)+' per year in today’s dollars.';
+ const ss=num('ssAmount'),pen=num('pension');document.getElementById('ssAmountOut').textContent=money(ss)+'/mo';document.getElementById('pensionOut').textContent=money(pen)+'/mo';document.getElementById('ssTaxOut').textContent=money(num('monthlyPay')*.062);
+ document.getElementById('ssGapText').innerHTML='Goal: <b>'+money(goal)+'/mo</b> · Illustrative Social Security: <b>'+money(ss)+'/mo</b> · Remaining gap: <b>'+money(Math.max(0,goal-ss))+'/mo</b>';
+ document.getElementById('pensionGapText').innerHTML='After Social Security and this pension, your remaining gap is <b>'+money(Math.max(0,goal-ss-pen))+'/month</b>.';
+ const sa=Math.min(num('startAge'),ra);if(sa!=num('startAge'))setv('startAge',sa);document.getElementById('startAgeOut').textContent=sa;const years=Math.max(0,ra-sa);document.getElementById('yearsInvesting').textContent=years+' years';
+ const own=num('monthlyContribution'),salary=num('salary'),mp=num('matchPct')/100;document.getElementById('monthlyContributionOut').textContent=money(own)+'/mo';document.getElementById('salaryOut').textContent=money(salary)+'/yr';document.getElementById('matchPctOut').textContent=(mp*100).toFixed(0)+'%';
+ const ownAnnual=own*12,matchAnnual=Math.min(ownAnnual,salary*mp);document.getElementById('yourAnnual').textContent=money(ownAnnual)+'/yr';document.getElementById('employerAnnual').textContent=money(matchAnnual)+'/yr';
+ const totalMonthly=(ownAnnual+matchAnnual)/12,balance=fvMonthly(totalMonthly,years*12,realReturn),inv=retirementMonthly(balance,ea-ra,.03);document.getElementById('projectedBalance').textContent=money(balance);document.getElementById('investmentIncome').textContent=money(inv)+'/mo';
+ const filled=ss+pen+inv,gap=goal-filled;document.getElementById('finalGap').innerHTML=gap>0?'<span class="warn">Gap '+money(gap)+'/mo</span>':'<span class="good">Surplus '+money(-gap)+'/mo</span>';
+ document.getElementById('stickyGoal').textContent=money(goal)+'/mo';document.getElementById('stickyFilled').textContent=money(Math.min(goal,filled))+'/mo';document.getElementById('stickyGap').textContent=gap>0?'Gap: '+money(gap)+'/mo':'Surplus: '+money(-gap)+'/mo';document.getElementById('stickyGap').className=gap>0?'warn':'good';
+ const parts=[Math.min(ss,goal),Math.min(pen,Math.max(0,goal-ss)),Math.min(inv,Math.max(0,goal-ss-pen))],remaining=Math.max(0,goal-parts.reduce((a,b)=>a+b,0));['barSS','barPension','barInvest','barGap'].forEach((id,i)=>document.getElementById(id).style.width=(goal?100*[...parts,remaining][i]/goal:0)+'%');
+ document.getElementById('planCard').innerHTML=`<h3>My plan in today's dollars</h3><div class="summary-grid"><div class="summary-item"><small>Retire</small><b>Age ${ra}</b></div><div class="summary-item"><small>Plan through</small><b>Age ${ea}</b></div><div class="summary-item"><small>Monthly goal</small><b>${money(goal)}</b></div><div class="summary-item"><small>Social Security illustration</small><b>${money(ss)}</b></div><div class="summary-item"><small>Pension assumption</small><b>${money(pen)}</b></div><div class="summary-item"><small>Projected investments</small><b>${money(balance)}</b></div><div class="summary-item"><small>Investment income estimate</small><b>${money(inv)}/mo</b></div><div class="summary-item"><small>Gap / surplus</small><b>${gap>0?'Gap '+money(gap):'Surplus '+money(-gap)}/mo</b></div></div><p>If I start at <b>${sa}</b>, contribute <b>${money(own)}/month</b>, and receive up to a <b>${(mp*100).toFixed(0)}% employer match</b>, this classroom model projects the investment result above.</p>`;
+ scheduleSave();
+}
+function whatIfStartLater(){setv('startAge',Math.min(num('retireAge')-1,num('startAge')+10));recalc()}function whatIfNoMatch(){setv('matchPct',0);recalc()}function whatIfDoubleContribution(){setv('monthlyContribution',Math.min(2000,num('monthlyContribution')*2));recalc()}function whatIfRetireLater(){setv('retireAge',Math.min(75,num('retireAge')+5));recalc()}
+function collectState(){const ids=['retireAge','endAge','housing','food','utilities','transport','health','other','monthlyPay','ssAmount','pension','startAge','monthlyContribution','salary','matchPct',...reflections];const s={};ids.forEach(id=>s[id]=val(id));s.realReturn=realReturn;s.studentId=val('studentId').trim();return s}
+function applyState(s){if(!s)return;Object.keys(s).forEach(id=>{if(document.getElementById(id)&&id!=='studentId')document.getElementById(id).value=s[id]});if(s.studentId)document.getElementById('studentId').value=s.studentId;if(s.realReturn){realReturn=Number(s.realReturn);document.querySelectorAll('[data-return]').forEach(x=>x.classList.toggle('selected',Number(x.dataset.return)===realReturn))}recalc()}
+let saveTimer;function scheduleSave(){clearTimeout(saveTimer);saveTimer=setTimeout(saveState,500)}
+async function backend(action,extra={}){if(APPS_SCRIPT_URL.startsWith('PASTE_'))return null;const sid=val('studentId').trim();if(!sid)return null;let last;for(let i=0;i<3;i++){try{const r=await fetch(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({secret:SHARED_SECRET,action,studentId:sid,...extra})});const t=await r.text();const j=JSON.parse(t);if(j.error)throw new Error(j.error);return j}catch(e){last=e;await new Promise(res=>setTimeout(res,700*(i+1)))} }throw last}
+async function saveState(){const s=collectState();localStorage.setItem('day5_retirement_'+(s.studentId||'local'),JSON.stringify(s));document.getElementById('saveStatus').textContent='Saved locally';if(s.studentId){try{const r=await backend('save_state',{state:s});if(r)document.getElementById('saveStatus').textContent='Saved'}catch(e){document.getElementById('saveStatus').textContent='Saved locally; class server unavailable'}}}
+async function loadState(){const sid=val('studentId').trim();if(!sid){alert('Enter your assigned code name first.');return}try{const r=await backend('load_state');if(r&&r.found&&r.state){applyState(r.state);document.getElementById('saveStatus').textContent='Saved work loaded';return}}catch(e){}const raw=localStorage.getItem('day5_retirement_'+sid);if(raw){applyState(JSON.parse(raw));document.getElementById('saveStatus').textContent='Local saved work loaded'}else document.getElementById('saveStatus').textContent='No saved work found'}
+function completion(){const missing=reflections.filter(id=>val(id).trim().length<(id==='finalReflection'?120:20));return {complete:missing.length===0,missing}}
+async function submitWork(){const c=completion(),area=document.getElementById('completionArea');if(!c.complete){area.innerHTML='<b>Not complete yet.</b> Finish: '+c.missing.map(id=>id==='finalReflection'?'Final synthesis':'Reflection '+id.replace('r','')).join(', ')+'.';return}let feedback='';try{const r=await backend('submit',{state:collectState()});feedback=r&&r.feedback?r.feedback:''}catch(e){}area.innerHTML='<b class="good">COMPLETE</b> — You completed all required sections.'+(feedback?'<p><b>Practice feedback:</b> '+feedback+'</p>':'');await saveState()}
+function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function downloadWork(){const c=completion(),s=collectState();const report=document.getElementById('printReport');report.innerHTML=`<h1>Unit 3, Day 5 — My Retirement Plan</h1><p><b>Student code:</b> ${esc(s.studentId||'(not entered)')}</p><div class="${c.complete?'good':'warn'}"><b>Completion status: ${c.complete?'COMPLETE':'INCOMPLETE'}</b></div>${document.getElementById('planCard').innerHTML}<div class="print-section"><h2>Reflections</h2>${reflections.map(id=>`<p class="print-label">${id==='finalReflection'?'Final synthesis':'Section '+id.replace('r','')}</p><div>${esc(val(id))||'(blank)'}</div>`).join('')}</div><p class="source">Classroom projections are illustrative, use today’s dollars, and are not guarantees of investment returns or future Social Security benefits.</p>`;document.body.classList.add('printing');window.print()}
+window.addEventListener('afterprint',()=>document.body.classList.remove('printing'));
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('textarea,input').forEach(el=>{el.addEventListener('input',scheduleSave);if(el.tagName==='TEXTAREA'){el.addEventListener('paste',e=>e.preventDefault());el.addEventListener('contextmenu',e=>e.preventDefault())}});recalc()});
+</script></body></html>
